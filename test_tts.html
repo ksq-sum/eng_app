@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edge TTS 测试页面</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+        .status {
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .status.success { background: #d4edda; color: #155724; }
+        .status.error { background: #f8d7da; color: #721c24; }
+        .status.info { background: #d1ecf1; color: #0c5460; }
+        .indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+        .indicator.on { background: #28a745; }
+        .indicator.off { background: #dc3545; }
+        textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-size: 16px;
+            resize: vertical;
+            min-height: 100px;
+            font-family: inherit;
+        }
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        .controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin: 20px 0;
+        }
+        label {
+            display: block;
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        select, input[type="range"] {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        input[type="range"] {
+            padding: 0;
+        }
+        .speed-display {
+            text-align: center;
+            font-weight: bold;
+            color: #667eea;
+            margin-top: 5px;
+        }
+        .buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        button {
+            padding: 15px 30px;
+            font-size: 16px;
+            font-weight: 600;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        button.primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        button.primary:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3); }
+        button.secondary {
+            background: #f8f9fa;
+            color: #333;
+            border: 2px solid #ddd;
+        }
+        button.secondary:hover { background: #e9ecef; }
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .examples {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 2px solid #f0f0f0;
+        }
+        .example-btn {
+            display: inline-block;
+            padding: 8px 15px;
+            margin: 5px;
+            background: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .example-btn:hover {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+        small {
+            display: block;
+            color: #999;
+            font-size: 13px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎙️ Edge TTS 测试</h1>
+        <small>测试 Python 后端 Edge TTS 服务</small>
+
+        <div id="status" class="status info">
+            <span class="indicator off"></span>
+            <span>正在检查服务状态...</span>
+        </div>
+
+        <div>
+            <label for="text">要朗读的文本：</label>
+            <textarea id="text" placeholder="输入英文文本...">Hello! How are you today? I'm learning English step by step.</textarea>
+        </div>
+
+        <div class="controls">
+            <div>
+                <label for="voice">语音类型：</label>
+                <select id="voice">
+                    <option value="female">美式女声 (Jenny)</option>
+                    <option value="male">美式男声 (Guy)</option>
+                    <option value="female-uk">英式女声 (Sonia)</option>
+                    <option value="male-uk">英式男声 (Ryan)</option>
+                </select>
+            </div>
+            <div>
+                <label for="speed">语速：</label>
+                <input type="range" id="speed" min="0.5" max="2.0" step="0.05" value="0.85">
+                <div class="speed-display" id="speed-display">0.85x</div>
+            </div>
+        </div>
+
+        <div class="buttons">
+            <button id="playBtn" class="primary" disabled>
+                <span>▶</span> 播放
+            </button>
+            <button id="stopBtn" class="secondary" disabled>
+                <span>⏹</span> 停止
+            </button>
+        </div>
+
+        <div class="examples">
+            <label>快速测试：</label>
+            <span class="example-btn" data-text="Good morning! Have a nice day.">早安问候</span>
+            <span class="example-btn" data-text="A latte, please.">点咖啡</span>
+            <span class="example-btn" data-text="Thank you so much! I really appreciate it.">感谢</span>
+            <span class="example-btn" data-text="Could you help me with this?">请求帮助</span>
+            <span class="example-btn" data-text="I'm sorry, I don't understand.">不理解</span>
+        </div>
+    </div>
+
+    <script type="module">
+        const TTS_SERVER = 'http://localhost:5000';
+
+        let currentAudio = null;
+        const statusEl = document.getElementById('status');
+        const textEl = document.getElementById('text');
+        const voiceEl = document.getElementById('voice');
+        const speedEl = document.getElementById('speed');
+        const speedDisplay = document.getElementById('speed-display');
+        const playBtn = document.getElementById('playBtn');
+        const stopBtn = document.getElementById('stopBtn');
+
+        // 检查服务状态
+        async function checkService() {
+            try {
+                const response = await fetch(`${TTS_SERVER}/health`, {
+                    signal: AbortSignal.timeout(3000)
+                });
+
+                if (response.ok) {
+                    statusEl.className = 'status success';
+                    statusEl.innerHTML = '<span class="indicator on"></span><span>✓ Edge TTS 服务运行正常</span>';
+                    playBtn.disabled = false;
+                    return true;
+                }
+            } catch (error) {
+                statusEl.className = 'status error';
+                statusEl.innerHTML = '<span class="indicator off"></span><span>✗ 服务未启动，请运行 start_tts_server.bat</span>';
+                playBtn.disabled = true;
+                return false;
+            }
+        }
+
+        // 播放音频
+        async function playAudio() {
+            const text = textEl.value.trim();
+            if (!text) {
+                alert('请输入要朗读的文本');
+                return;
+            }
+
+            stopAudio();
+
+            playBtn.disabled = true;
+            playBtn.innerHTML = '<span>⏳</span> 生成中...';
+            statusEl.className = 'status info';
+            statusEl.innerHTML = '<span class="indicator on"></span><span>正在生成音频...</span>';
+
+            try {
+                const response = await fetch(`${TTS_SERVER}/tts`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        text: text,
+                        voice: voiceEl.value,
+                        speed: parseFloat(speedEl.value)
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`服务器错误: ${response.status}`);
+                }
+
+                const blob = await response.blob();
+                const url = URL.createObjectURL(blob);
+
+                currentAudio = new Audio(url);
+                currentAudio.volume = 1;
+
+                currentAudio.onplay = () => {
+                    statusEl.className = 'status success';
+                    statusEl.innerHTML = '<span class="indicator on"></span><span>🔊 正在播放...</span>';
+                    stopBtn.disabled = false;
+                };
+
+                currentAudio.onended = () => {
+                    statusEl.className = 'status success';
+                    statusEl.innerHTML = '<span class="indicator on"></span><span>✓ 播放完成</span>';
+                    playBtn.disabled = false;
+                    playBtn.innerHTML = '<span>▶</span> 播放';
+                    stopBtn.disabled = true;
+                    URL.revokeObjectURL(url);
+                };
+
+                currentAudio.onerror = () => {
+                    statusEl.className = 'status error';
+                    statusEl.innerHTML = '<span class="indicator off"></span><span>✗ 播放失败</span>';
+                    playBtn.disabled = false;
+                    playBtn.innerHTML = '<span>▶</span> 播放';
+                };
+
+                await currentAudio.play();
+
+            } catch (error) {
+                console.error('播放失败:', error);
+                statusEl.className = 'status error';
+                statusEl.innerHTML = `<span class="indicator off"></span><span>✗ 错误: ${error.message}</span>`;
+                playBtn.disabled = false;
+                playBtn.innerHTML = '<span>▶</span> 播放';
+            }
+        }
+
+        // 停止播放
+        function stopAudio() {
+            if (currentAudio) {
+                currentAudio.pause();
+                currentAudio.src = '';
+                currentAudio = null;
+            }
+            playBtn.disabled = false;
+            playBtn.innerHTML = '<span>▶</span> 播放';
+            stopBtn.disabled = true;
+        }
+
+        // 更新语速显示
+        speedEl.addEventListener('input', () => {
+            speedDisplay.textContent = speedEl.value + 'x';
+        });
+
+        // 快速测试按钮
+        document.querySelectorAll('.example-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                textEl.value = btn.dataset.text;
+            });
+        });
+
+        playBtn.addEventListener('click', playAudio);
+        stopBtn.addEventListener('click', stopAudio);
+
+        // 初始检查
+        checkService();
+
+        // 定期检查服务状态
+        setInterval(() => {
+            if (!currentAudio) {
+                checkService();
+            }
+        }, 5000);
+    </script>
+</body>
+</html>

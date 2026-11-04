@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f7f7f2">
+  <meta name="description" content="初级英语绘本学习：看图读故事、听英语、学词句、开口复述。">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" type="image/svg+xml" href="icon.svg">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="book.css">
+  <title>小步英语 · 初级绘本课</title>
+</head>
+<body>
+  <aside class="sidebar">
+    <a class="brand" href="#today" aria-label="小步英语首页"><span class="brand-mark">b<span>·</span></span><span>小步英语<small>A LITTLE, EVERY DAY.</small></span></a>
+    <div class="nav-caption">给自己一点成长的时间</div>
+    <nav class="navigation" aria-label="主导航">
+      <a href="#today" data-page="today"><span data-icon="sun"></span><span>今日学习</span><i></i></a>
+      <a href="#scenes" data-page="scenes"><span data-icon="grid"></span><span>绘本书架</span><i></i></a>
+      <a href="#words" data-page="words"><span data-icon="bookmark"></span><span>我的词句</span><i></i></a>
+      <a href="#progress" data-page="progress"><span data-icon="chart"></span><span>成长记录</span><i></i></a>
+    </nav>
+    <div class="sidebar-note"><span class="note-spark">✳</span><strong>不用一下子变得很厉害。</strong><p>今天比昨天多说一句，<br>就已经很好了。</p><span class="note-line"></span><small>ONE SMALL STEP AT A TIME</small></div>
+    <div class="local-profile"><span class="avatar">我</span><div>自己的英语小天地<small>进度保存在这台设备</small></div><span class="profile-dot"></span></div>
+  </aside>
+  <div class="app-shell">
+    <header class="topbar"><span class="breadcrumb">我的学习空间 <span>/</span> <strong id="page-name">今日学习</strong></span><div class="topbar-right"><span class="date-label" id="today-date"></span><button class="icon-button" id="help-button" aria-label="学习说明"><span data-icon="help"></span></button></div></header>
+    <main id="main" tabindex="-1"></main>
+    <footer class="page-footer"><span>慢慢来，也是一种很好的节奏。</span><span>MADE FOR YOUR EVERYDAY GROWTH <span class="tiny-flower">✳</span></span></footer>
+  </div>
+  <dialog id="lesson-dialog" class="lesson-dialog" aria-labelledby="lesson-title"></dialog>
+  <dialog id="help-dialog" class="help-dialog" aria-labelledby="help-title"><button class="icon-button dialog-close" id="close-help" aria-label="关闭说明">×</button><span class="eyebrow">A LITTLE GUIDE</span><h2 id="help-title">从一个完整的故事开始。</h2><p>绘本分为读绘本、学词句、开口说、读后练习四个环节。先看图、逐页听读，再学习词句和复述。浏览全部页面后才能进入词句环节，读后练习可重试，全部答对后完成绘本。</p><p>不要求一次学完。阅读页码、学习环节及已答对的练习自动保存在当前浏览器。每日 8 分钟只是目标，练习窗口打开、页面可见且未暂停时才累计真实时间。</p><p>新绘本朗读优先使用已启动的 TTS 服务，否则尝试系统英语语音；可点句子或整页朗读、慢速听，不保证离线朗读可用。原有单句课程保留内置音频。</p><p>语音识别可选，可能将录音发送给浏览器的语音服务，需要浏览器支持、麦克风权限及网络，不提供发音评分。进度不跨设备同步，清理网站数据会删除进度；离线阅读需要先联网缓存资源。</p><button class="button primary" id="help-start">知道啦，开始读故事</button></dialog>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script type="module" src="app.js"></script>
+</body>
+</html>
