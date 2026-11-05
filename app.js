@@ -53,7 +53,7 @@ function speak(text, rate = 0.85, onEnd) {
   if (recognition) { recognition.abort(); recognition = null; }
   audioPlayer.speak(text, rate, onEnd);
 }
-function readStory(rate = 0.85, wholeChapter = false) {
+function readStory(rate = 0.85) {
   stopMedia();
   const readingSession = session;
   const firstPage = session.bookPage;
@@ -67,7 +67,7 @@ function readStory(rate = 0.85, wholeChapter = false) {
       if (session !== readingSession || session.phase !== 0) return;
       if (session.sentenceIndex + 1 < page.lines.length) {
         session.sentenceIndex += 1;
-      } else if (wholeChapter && session.bookPage + 1 < session.lesson.pages.length) {
+      } else if (session.bookPage + 1 < session.lesson.pages.length) {
         session.bookPage += 1;
         session.sentenceIndex = 0;
         session.visitedPages.add(session.bookPage);
@@ -192,7 +192,7 @@ function handleBookAction(button) {
     return true;
   }
   if (button.hasAttribute('data-book-stop')) { stopMedia(); return true; }
-  if (button.hasAttribute('data-book-chapter')) { readStory(0.85, true); return true; }
+  if (button.hasAttribute('data-book-chapter')) { readStory(); return true; }
   if (button.hasAttribute('data-book-paragraph')) { readStory(); return true; }
   if (button.dataset.bookSpeak !== undefined) { speak(button.dataset.bookSpeak); return true; }
   if (button.hasAttribute('data-book-slow')) {
