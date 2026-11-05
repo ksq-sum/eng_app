@@ -1,15 +1,11 @@
 import { icon } from './icons.js';
 import { bookIllustration } from './book-art.js';
+import { storyStage } from './story-stage.js';
 
 export const bookPhases = ['读绘本', '学词句', '开口说', '读后练习'];
 const escapeHtml = (text) => text.replaceAll('&', '&amp;').replaceAll('"', '&quot;').replaceAll('<', '&lt;').replaceAll('>', '&gt;');
 const listen = (text, label = '听一听') => `<button class="button secondary" data-book-speak="${escapeHtml(text)}">${icon('sound')} ${label}</button>`;
 
-function englishChapterContent(session) {
-  const { lesson, bookPage } = session;
-  const page = lesson.pages[bookPage];
-  return `<div class="book-page-heading"><div><span class="eyebrow">PARAGRAPH ${bookPage + 1} / ${lesson.pages.length}</span><h2 id="lesson-title">${page.title}</h2></div></div><div class="book-spread"><div class="book-picture">${bookIllustration(page.scene)}<span class="book-picture-caption">${lesson.englishTitle}</span></div><div class="book-text"><span class="eyebrow">READ · LISTEN · IMAGINE</span>${page.lines.map(([english]) => `<div class="book-line"><button data-book-speak="${escapeHtml(english)}" lang="en" aria-label="朗读：${escapeHtml(english)}">${escapeHtml(english)}<span aria-hidden="true">${icon('sound')}</span></button></div>`).join('')}<div class="audio-actions">${listen(page.lines.map(([english]) => english).join(' '), '听这一段')}<button class="button secondary" data-book-slow>${icon('play')} 慢速听</button>${listen(lesson.pages.flatMap((entry) => entry.lines.map(([english]) => english)).join(' '), '朗读整章')}<button class="button secondary" data-book-stop>停止朗读</button></div></div></div><div class="book-page-nav"><button class="button outline" data-book-page="${bookPage - 1}" ${bookPage === 0 ? 'disabled' : ''}>← 上一段</button><span>${bookPage + 1} / ${lesson.pages.length}</span><button class="button primary" data-book-page="${bookPage + 1}" ${bookPage === lesson.pages.length - 1 ? 'disabled' : ''}>下一段 →</button></div><div class="book-note"><strong>Read and listen</strong><p>${page.focus}</p><div class="book-word-tags">${page.words.map(([word, meaning]) => `<button data-book-speak="${escapeHtml(word)}"><b lang="en">${word}</b> ${meaning} ${icon('sound')}</button>`).join('')}</div></div>`;
-}
 
 export function renderBook(session) {
   const { lesson, phase, bookPage, showChinese } = session;
@@ -31,7 +27,7 @@ export function renderBook(session) {
   if (phase === 3) {
     content = `<h2 id="lesson-title">读懂故事，也试着用一用。</h2><p class="lesson-subtitle">${lesson.quiz.length} 道小练习，可重试。全部答对后完成绘本；需要时可以返回故事查找线索。</p>${lesson.quiz.map((question, questionIndex) => `<section class="book-question"><h3>${questionIndex + 1}. ${question.question}</h3><div class="quiz-options">${question.options.map((option, answerIndex) => `<button class="quiz-option ${session.bookAnswers[questionIndex] === answerIndex ? 'correct' : ''}" data-book-question="${questionIndex}" data-book-answer="${answerIndex}" ${session.bookAnswers[questionIndex] !== undefined ? 'disabled' : ''} lang="en">${option}</button>`).join('')}</div><p class="feedback" data-book-feedback="${questionIndex}" role="status">${session.bookAnswers[questionIndex] !== undefined ? `✓ ${question.explanation}` : '读一读，选出最合适的一项。'}</p></section>`).join('')}`;
   }
-  if (lesson.englishOnly && phase === 0) content = englishChapterContent(session);
+  if (lesson.englishOnly && phase === 0) content = storyStage(session);
   if (lesson.englishOnly && phase === 2) {
     content = `<h2 id="lesson-title">Read aloud and retell.</h2><p class="lesson-subtitle">Choose a sentence, listen, and read it aloud.</p><label class="book-select-label" for="book-practice">Choose a sentence</label><select id="book-practice">${lesson.pages.flatMap((entry) => entry.lines).map(([english]) => `<option value="${escapeHtml(english)}" ${english === session.practiceText ? 'selected' : ''}>${escapeHtml(english)}</option>`).join('')}</select><div class="speech-card"><p class="english" lang="en">${escapeHtml(session.practiceText)}</p>${listen(session.practiceText, '听示范')}<button class="button outline" data-record>${icon('mic')} 试试语音识别</button><p id="recognition-result" class="recognition-result" role="status">Read the sentence aloud. Speech recognition is optional.</p></div><div class="book-note"><strong>Retell the chapter</strong><p>${lesson.retellPrompts.join('<br>')}</p><details><summary>Example</summary><p lang="en">${lesson.retellExample.join('<br>')}</p></details></div>`;
   }

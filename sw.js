@@ -1,6 +1,6 @@
-const cacheName = 'little-steps-v8';
+const cacheName = 'little-steps-v11';
 const audioIds = ['coffee', 'hello', 'breakfast', 'directions', 'weekend', 'again'];
-const bookAssets = ['./book-reader.js', './book.css', './chapter-one.js'];
+const bookAssets = ['./book-reader.js', './book.css', './chapter-one.js', './story-stage.js', './theatre.css', './pic/back.png', './pic/boy.png', './pic/huakuang.png'];
 const audioAssets = audioIds.flatMap((id) => [`./audio/${id}.wav`, ...[0, 1, 2].map((index) => `./audio/${id}-chunk-${index}.wav`)]);
 const assets = ['./', './index.html', './styles.css', './app.js', './picturebook.js', './book-art.js', './audio.js', './audio_edge.js', './lessons.js', './icons.js', './state.js', './manifest.webmanifest', './icon.svg', './icon-192.png', './icon-512.png', ...audioAssets];
 self.addEventListener('install', (event) => {
