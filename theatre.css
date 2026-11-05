@@ -22,3 +22,46 @@ body.bookshelf-only{background:#141b1b;color:#eee1c4;background-image:linear-gra
 @media(max-width:700px){.bookshelf-only .topbar{margin:0 22px;height:66px}.bookshelf-only main{padding:35px 22px 25px}.bookshelf-only .intro h1{font-size:34px}.bookshelf-only .library-grid{grid-template-columns:minmax(0,1fr);max-width:420px}.bookshelf-only .page-footer{margin:0 22px;line-height:1.8}.shelf-cover{height:205px}.book-dialog{padding:15px 12px;max-width:calc(100vw - 12px);max-height:97dvh}.story-stage{padding:12px 10px}.stage-topline{font-size:6px;letter-spacing:1px}.stage-scene{height:240px;gap:12px;padding:10px 0 0}.memory-frame{width:63%}.memory-title>span{font-size:5px;letter-spacing:1px}.memory-title h2{font-size:clamp(16px,4vw,24px)}.memory-title p{font-size:9px;line-height:1.5;margin-top:4px}.memory-title i{font-size:10px}.narrator-portrait{width:29%;height:210px}.narrator-portrait span{font-size:5px;letter-spacing:.5px;padding:7px 2px}.dialogue-paper{padding:16px}.speaker-name{font-size:16px}.dialogue-heading>span:last-child{font-size:7px;letter-spacing:1px}.dialogue-sentence{font-size:21px;min-height:150px;padding:15px 0}.dialogue-bottom>span{font-size:8px}.book-dialog .button{font-size:10px;padding:8px 10px}.stage-tools{justify-content:center}.stage-tools .audio-actions{justify-content:center;gap:5px}.paragraph-controls{justify-content:space-between;width:100%}.stage-transcript{font-size:9px}}
 @media(max-width:380px){.stage-scene{height:195px}.narrator-portrait{height:175px}.memory-title p{display:none}.memory-title h2{margin:5px 0!important}.memory-title>span{display:none}.dialogue-bottom{flex-wrap:wrap}.sentence-controls{margin-left:auto}.stage-topline>span:first-child{display:none}}
 @media(max-width:700px){.memory-title p{display:none}.book-dialog .timer{background:#c5a66a12;border:1px solid #a68e5c50}}
+
+body.reading-book{overflow:hidden}
+#lesson-dialog.book-dialog[hidden]{display:none}
+#lesson-dialog.book-dialog{position:fixed;inset:0;display:flex;flex-direction:column;gap:8px;margin:0;width:100%;max-width:none;height:100dvh;max-height:none;border:0;border-radius:0;box-shadow:none;padding:max(12px,env(safe-area-inset-top)) max(20px,env(safe-area-inset-right)) max(12px,env(safe-area-inset-bottom)) max(20px,env(safe-area-inset-left));overflow:hidden}
+#lesson-dialog>.lesson-header,#lesson-dialog>.book-steps,#lesson-dialog>.lesson-phase,#lesson-dialog>.lesson-footer,#lesson-dialog>[data-audio-status]{width:100%;max-width:1400px;align-self:center;flex-shrink:0;margin:0}
+#lesson-dialog>.book-steps>span{padding:7px}
+#lesson-dialog>.lesson-footer{padding-top:8px;flex-wrap:nowrap}
+#lesson-dialog>.lesson-footer>span{flex-basis:auto;order:0}
+#lesson-dialog>[data-audio-status]:empty{display:none}
+#lesson-dialog>.reader-content{flex:1;min-height:0;width:100%;max-width:1400px;align-self:center;overflow:auto;overscroll-behavior:contain}
+#lesson-dialog .story-stage{display:flex;flex-direction:column;gap:8px;height:100%;min-height:440px;margin:0;padding:12px 20px}
+#lesson-dialog .stage-scene{flex:1;min-height:80px;height:auto;padding:0;gap:clamp(12px,4vw,50px)}
+#lesson-dialog .memory-frame{height:100%;max-height:300px;width:auto;max-width:62%;aspect-ratio:4/3}
+#lesson-dialog .narrator-portrait{height:100%;max-height:270px;width:auto;aspect-ratio:19/29}
+#lesson-dialog .dialogue-paper{margin:0;padding:12px 22px;flex-shrink:0}
+#lesson-dialog .dialogue-heading{padding-bottom:6px}
+#lesson-dialog .dialogue-sentence{min-height:0;padding:10px 0;font-size:clamp(19px,2.1vw,28px);line-height:1.45;max-height:24dvh;overflow:auto}
+#lesson-dialog .stage-tools{margin:0;gap:8px;flex-shrink:0}
+#lesson-dialog .stage-transcript{margin:0;flex-shrink:0}
+#lesson-dialog .stage-transcript[open]{max-height:30dvh;overflow:auto}
+#lesson-dialog>.complete-screen{margin:auto;max-height:100%;overflow:auto}
+@media(max-width:700px){
+  #lesson-dialog.book-dialog{gap:5px;padding:max(8px,env(safe-area-inset-top)) max(10px,env(safe-area-inset-right)) max(8px,env(safe-area-inset-bottom)) max(10px,env(safe-area-inset-left))}
+  #lesson-dialog>.book-steps>span{font-size:9px;padding:6px 2px}
+  #lesson-dialog .lesson-header .eyebrow{font-size:8px}
+  #lesson-dialog .story-stage{padding:8px;gap:6px;min-height:390px}
+  #lesson-dialog .memory-frame{max-height:210px}
+  #lesson-dialog .narrator-portrait{max-height:200px;max-width:29%}
+  #lesson-dialog .memory-title h2{font-size:clamp(14px,4vw,22px);margin:5px 0!important}
+  #lesson-dialog .dialogue-paper{padding:10px 12px}
+  #lesson-dialog .dialogue-sentence{font-size:clamp(17px,4.8vw,21px);max-height:24dvh}
+  #lesson-dialog .button{padding:7px 9px;min-height:32px}
+  #lesson-dialog .stage-tools .audio-actions{gap:4px}
+  #lesson-dialog>.lesson-footer .button{min-width:0;white-space:nowrap}
+  #lesson-dialog>.lesson-footer>span{font-size:8px}
+}
+@media(max-height:600px) and (min-width:701px){
+  #lesson-dialog .story-stage{min-height:300px;gap:5px;padding:8px 16px}
+  #lesson-dialog .memory-title p,#lesson-dialog .memory-title>span,#lesson-dialog .memory-title i{display:none}
+  #lesson-dialog .memory-title h2{font-size:18px;margin:0!important}
+  #lesson-dialog .button{min-height:30px;padding:6px 10px}
+  #lesson-dialog .dialogue-sentence{font-size:19px;padding:6px 0}
+}

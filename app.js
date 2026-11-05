@@ -49,9 +49,36 @@ function renderScenes() {
 function render() {
   renderScenes();
 }
-function speak(text, rate = 0.85) {
+function speak(text, rate = 0.85, onEnd) {
   if (recognition) { recognition.abort(); recognition = null; }
-  audioPlayer.speak(text, rate);
+  audioPlayer.speak(text, rate, onEnd);
+}
+function readStory(rate = 0.85, wholeChapter = false) {
+  stopMedia();
+  const readingSession = session;
+  const firstPage = session.bookPage;
+  session.sentenceIndex = 0;
+  function readSentence() {
+    if (session !== readingSession || session.finished || session.phase !== 0) return;
+    const page = session.lesson.pages[session.bookPage];
+    renderLesson();
+    saveState();
+    speak(page.lines[session.sentenceIndex][0], rate, () => {
+      if (session !== readingSession || session.phase !== 0) return;
+      if (session.sentenceIndex + 1 < page.lines.length) {
+        session.sentenceIndex += 1;
+      } else if (wholeChapter && session.bookPage + 1 < session.lesson.pages.length) {
+        session.bookPage += 1;
+        session.sentenceIndex = 0;
+        session.visitedPages.add(session.bookPage);
+      } else {
+        return;
+      }
+      readSentence();
+    });
+  }
+  session.visitedPages.add(firstPage);
+  readSentence();
 }
 function startLesson(id) {
   const lesson = lessons.find((entry) => entry.id === id && entry.book);
@@ -64,10 +91,31 @@ function startLesson(id) {
     session.answered = lesson.quiz.every((question, index) => session.bookAnswers[index] === question.answer);
   }
   lessonDialog.classList.toggle('book-dialog', Boolean(lesson.book));
-  renderLesson(); lessonDialog.showModal();
+  document.body.classList.add('reading-book');
+  document.querySelector('.app-shell').hidden = true;
+  lessonDialog.hidden = false;
+  renderLesson();
+  lessonDialog.focus();
+}
+function closeBook() {
+  accrueTime();
+  stopMedia();
+  saveState();
+  session = null;
+  lessonDialog.hidden = true;
+  document.body.classList.remove('reading-book');
+  document.querySelector('.app-shell').hidden = false;
+  render();
+  main.querySelector('[data-start]')?.focus();
 }
 function renderLesson() {
   lessonDialog.innerHTML = renderBook(session);
+  const content = document.createElement('div');
+  content.className = 'reader-content';
+  const phase = lessonDialog.querySelector('.lesson-phase');
+  const status = lessonDialog.querySelector('[data-audio-status]');
+  while (phase.nextSibling !== status) content.append(phase.nextSibling);
+  phase.after(content);
   lessonDialog.scrollTop = 0;
   updateTimer();
 }
@@ -82,7 +130,7 @@ function accrueTime() {
   const now = performance.now();
   const elapsed = Math.min(Math.max((now - session.lastTick) / 1000, 0), 2);
   session.lastTick = now;
-  if (session.paused || session.finished || document.hidden || !lessonDialog.open) return;
+  if (session.paused || session.finished || document.hidden || lessonDialog.hidden) return;
   session.seconds += elapsed; session.phaseSeconds += elapsed;
   state.days[localDate()] = Math.min(86400, (state.days[localDate()] || 0) + elapsed);
   updateTimer();
@@ -128,8 +176,8 @@ document.addEventListener('click', async (event) => {
 lessonDialog.addEventListener('click', (event) => {
   const button = event.target.closest('button');
   if (!button || !session) return;
-  if (button.hasAttribute('data-close')) { accrueTime(); lessonDialog.close(); return; }
-  if (button.dataset.restart) { const id = button.dataset.restart; lessonDialog.close(); startLesson(id); return; }
+  if (button.hasAttribute('data-close')) { closeBook(); return; }
+  if (button.dataset.restart) { const id = button.dataset.restart; closeBook(); startLesson(id); return; }
   if (session.finished) return;
   handleBookAction(button);
 });
@@ -144,8 +192,11 @@ function handleBookAction(button) {
     return true;
   }
   if (button.hasAttribute('data-book-stop')) { stopMedia(); return true; }
+  if (button.hasAttribute('data-book-chapter')) { readStory(0.85, true); return true; }
+  if (button.hasAttribute('data-book-paragraph')) { readStory(); return true; }
   if (button.dataset.bookSpeak !== undefined) { speak(button.dataset.bookSpeak); return true; }
   if (button.hasAttribute('data-book-slow')) {
+    if (session.phase === 0 && session.lesson.englishOnly) { readStory(0.65); return true; }
     speak(session.lesson.pages[session.bookPage].lines.map(([english]) => english).join(' '), 0.65);
     return true;
   }
@@ -202,10 +253,8 @@ lessonDialog.addEventListener('change', (event) => {
   renderLesson();
   lessonDialog.querySelector('#book-practice').focus();
 });
-lessonDialog.addEventListener('cancel', accrueTime);
-lessonDialog.addEventListener('close', () => {
-  if (lessonDialog.open) return;
-  stopMedia(); saveState(); session = null; render();
+document.addEventListener('keydown', (event) => {
+  if (event.key === 'Escape' && !lessonDialog.hidden) closeBook();
 });
 document.querySelector('#help-button').addEventListener('click', () => helpDialog.showModal());
 document.querySelector('#close-help').addEventListener('click', () => helpDialog.close());
@@ -214,7 +263,7 @@ window.addEventListener('hashchange', () => { render(); window.scrollTo({ top: 0
 document.addEventListener('visibilitychange', () => {
   if (session) session.lastTick = performance.now();
   if (document.hidden) { stopMedia(); saveState(); }
-  else if (!lessonDialog.open) render();
+  else if (lessonDialog.hidden) render();
 });
 window.addEventListener('pagehide', saveState);
 setInterval(() => { accrueTime(); if (session && !session.finished) saveState(); }, 1000);

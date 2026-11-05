@@ -31,7 +31,7 @@ export function createEdgeAudioPlayer(report) {
     report('');
   }
 
-  async function speak(text, rate = 0.85) {
+  async function speak(text, rate = 0.85, onEnd) {
     stop();
     const requestId = playbackId;
     let fellBack = false;
@@ -52,7 +52,7 @@ export function createEdgeAudioPlayer(report) {
         activeUrl = null;
       }
       report('在线语音暂不可用，正在尝试内置音频或系统英语语音。');
-      fallbackPlayer.speak(text, rate);
+      fallbackPlayer.speak(text, rate, () => { if (requestId === playbackId) onEnd?.(); });
     }
 
     try {
@@ -104,6 +104,7 @@ export function createEdgeAudioPlayer(report) {
           activeUrl = null;
           activeAudio = null;
           report('播放结束，可以再听一遍。');
+          onEnd?.();
         }
       };
 

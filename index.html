@@ -19,7 +19,7 @@
     <main id="main" tabindex="-1"></main>
     <footer class="page-footer"><span>慢慢来，也是一种很好的节奏。</span><span>MADE FOR YOUR EVERYDAY GROWTH <span class="tiny-flower">✳</span></span></footer>
   </div>
-  <dialog id="lesson-dialog" class="lesson-dialog" aria-labelledby="lesson-title"></dialog>
+  <section id="lesson-dialog" class="lesson-dialog book-dialog" aria-label="绘本阅读" tabindex="-1" hidden></section>
   <dialog id="help-dialog" class="help-dialog" aria-labelledby="help-title"><button class="icon-button dialog-close" id="close-help" aria-label="关闭说明">×</button><span class="eyebrow">READING GUIDE</span><h2 id="help-title">选一本绘本，开始阅读。</h2><p>点击书架上的封面即可打开章节。支持逐句、逐段和整章朗读，也可以慢速听或停止播放。</p><p>阅读、词句、跟读与练习功能保持不变。阅读位置和已完成的练习保存在当前浏览器，下次打开可以继续。</p><p>朗读使用现有 TTS 服务，不可用时尝试系统英语语音。语音识别可选，可能将录音发送给浏览器的语音服务，不提供发音评分。</p><p>清理网站数据会删除阅读进度，进度不跨设备同步。离线阅读需要先联网完成缓存。</p><button class="button primary" id="help-start">开始阅读</button></dialog>
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
   <script type="module" src="app.js"></script>
