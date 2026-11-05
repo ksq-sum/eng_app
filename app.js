@@ -262,7 +262,10 @@ document.querySelector('#help-start').addEventListener('click', () => helpDialog
 window.addEventListener('hashchange', () => { render(); window.scrollTo({ top: 0 }); });
 document.addEventListener('visibilitychange', () => {
   if (session) session.lastTick = performance.now();
-  if (document.hidden) { stopMedia(); saveState(); }
+  if (document.hidden) {
+    if (recognition) { recognition.abort(); recognition = null; }
+    saveState();
+  }
   else if (lessonDialog.hidden) render();
 });
 window.addEventListener('pagehide', saveState);
