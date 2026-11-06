@@ -1,4 +1,4 @@
-const cacheName = 'little-steps-v16';
+const cacheName = 'little-steps-v19';
 const audioIds = ['coffee', 'hello', 'breakfast', 'directions', 'weekend', 'again'];
 const bookAssets = ['./book-reader.js', './book.css', './chapter-one.js', './story-stage.js', './theatre.css', './pic/back.png', './pic/boy.png', './pic/huakuang.png'];
 const audioAssets = audioIds.flatMap((id) => [`./audio/${id}.wav`, ...[0, 1, 2].map((index) => `./audio/${id}-chunk-${index}.wav`)]);
